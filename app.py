@@ -102,12 +102,11 @@ class App():
     def removeData(self):
         os.remove("gasprediction.json")
 
-
-app = App()
-#app.initialize()
-app.fetchData()
-app.getYMD()
-app.UpdateInfo()
-app.UpdateDB()
-app.removeData()
-
+if __name__ == "__main__":
+    app = App()
+    #app.initialize()
+    app.fetchData()
+    app.getYMD()
+    app.UpdateInfo()
+    app.UpdateDB()
+    app.removeData()
