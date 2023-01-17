@@ -21,6 +21,7 @@ class App():
 
     def initialize(self):
         """
+        TESTING ONLY - Depercated!!
         Initialize the database.
         """
 
@@ -110,5 +111,3 @@ app.UpdateInfo()
 app.UpdateDB()
 app.removeData()
 
-
-# os.system('python gasprediction/gui.py')
