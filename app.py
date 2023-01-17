@@ -2,6 +2,7 @@ import os
 import requests
 import sqlite3
 import json
+import re
 from datetime import datetime
 from dbcm import DBCM
 
@@ -15,12 +16,10 @@ headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 r = requests.post(url, data=contents, headers=headers)
 r.status_code """
 
-price = {}
-dataList = []
-file = open("gasprediction.json", 'r')
-raw = json.load(file)[0]
 
 class App():
+
+    dataList = []
 
     def initialize(self):
         """
@@ -31,14 +30,22 @@ class App():
             cur.execute("""create table if not exists data
             (id integer primary key autoincrement not null,
             timestamp text not null,
+            date text not null,
             location text not null,
             regular real not null,
             premium real not null,
             diesel real not null);""")
             #print("Table created successfully.")
-        print("Initialize Completed!")
+        print("Initialize Database Completed!")
+
+    def fetchData(self):
+        os.system(
+            'scrapy runspider gasprediction/gasprediction/spiders/gas_prediction.py -o gasprediction.json')
 
     def UpdateInfo(self):
+        price = {}
+        file = open("gasprediction.json", 'r')
+        raw = json.load(file)[0]
         for index, city in enumerate(raw["cityname"]):
             data = {}
             price = {}
@@ -48,25 +55,62 @@ class App():
             price["diesel"] = raw["gasprice"][index*3+2]
 
             data["timestamp"] = datetime.timestamp(datetime.now())
+            data["date"] = self.getYMD()
             data["location"] = city
             data["price"] = price
 
-            dataList.append(data)
+            self.dataList.append(data)
+
+    def monthToNum(self,month):
+        mth = {'January': 1,
+               'February': 2,
+               'March': 3,
+               'April': 4,
+               'May': 5,
+               'June': 6,
+               'July': 7,
+               'August': 8,
+               'Septemper': 9,
+               'October': 10,
+               'November': 11,
+               'December': 12}
+        try:
+            out = mth[month]
+            return out
+        except:
+            raise ValueError("Not month input")
+
+    def getYMD(self):
+        file = open("gasprediction.json", 'r')
+        raw = json.load(file)[0]
+        ymd = raw["title"].split()
+        year = ymd[7]
+        month = self.monthToNum(ymd[6])
+        day = re.findall(r'\d+', ymd[4])[0]
+        out = f"{year}-{month}-{day}"
+        return out
 
     def UpdateDB(self):
         with DBCM("test.sqlite") as cur:
-            for item in dataList:
-                sql = """insert into data (timestamp, location, regular, premium, diesel) values (?,?,?,?,?)"""
-                value = (item["timestamp"], item["location"],item["price"]["regular"], item["price"]["premium"], item["price"]["diesel"])
+            for item in self.dataList:
+                sql = """insert into data (timestamp, date, location, regular, premium, diesel) values (?,?,?,?,?,?)"""
+                value = (item["timestamp"], item["date"], item["location"], item["price"]
+                         ["regular"], item["price"]["premium"], item["price"]["diesel"])
                 cur.execute(sql, value)
 
         print("Database Updated!")
 
+    def removeData(self):
+        os.remove("gasprediction.json")
+
+
 app = App()
 app.initialize()
+app.fetchData()
+app.getYMD()
 app.UpdateInfo()
 app.UpdateDB()
-
+app.removeData()
 
 
 # os.system('python gasprediction/gui.py')
