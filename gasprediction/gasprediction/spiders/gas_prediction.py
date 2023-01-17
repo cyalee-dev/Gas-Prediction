@@ -21,4 +21,3 @@ class GasPredictionSpider(scrapy.Spider):
         gaspricecount = len(gasprice)
 
         return {"title": title, "cityname" : cityname, "gasprice" : gasprice, "citycount" : citycount, "gaspricecount" : gaspricecount}
-        pass
