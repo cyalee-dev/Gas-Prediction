@@ -1,14 +1,18 @@
 """Module providing function for database connection"""
-import sqlite3
+import os
+import psycopg2
 
 class DBCM():
     "Content manager for database connection"
-    def __init__(self,dbname):
-        self.dbname = dbname
+    def __init__(self):
+        #self.dbname = dbname
+        pass
 
     def __enter__(self):
-        self.conn = sqlite3.connect(self.dbname)
+        #self.conn = sqlite3.connect(self.dbname)
         #print("Database opened successfully")
+        self.conn = psycopg2.connect(host=os.getenv("host"),port=os.getenv("port"),database=os.getenv("database"),user=os.getenv("user"),password=os.getenv("password"))
+        print("Database opened successfully")
         self.cur = self.conn.cursor()
 
         return self.cur

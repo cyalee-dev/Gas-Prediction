@@ -1,6 +1,4 @@
 import os
-import requests
-import sqlite3
 import json
 import re
 from datetime import datetime
@@ -26,7 +24,7 @@ class App():
         Initialize the database.
         """
 
-        with DBCM("test.sqlite") as cur:
+        with DBCM() as cur:
             cur.execute("""create table if not exists data
             (id integer primary key autoincrement not null,
             timestamp text not null,
@@ -85,15 +83,15 @@ class App():
         raw = json.load(file)[0]
         ymd = raw["title"].split()
         year = ymd[7]
-        month = self.monthToNum(ymd[6])
+        month = str(self.monthToNum(ymd[6])).zfill(2)
         day = re.findall(r'\d+', ymd[4])[0]
         out = f"{year}-{month}-{day}"
         return out
 
     def UpdateDB(self):
-        with DBCM("test.sqlite") as cur:
+        with DBCM() as cur:
             for item in self.dataList:
-                sql = """insert into data (timestamp, date, location, regular, premium, diesel) values (?,?,?,?,?,?)"""
+                sql = """insert into data (timestamp, date, location, regular, premium, diesel) values (%s,%s,%s,%s,%s,%s)"""
                 value = (item["timestamp"], item["date"], item["location"], item["price"]
                          ["regular"], item["price"]["premium"], item["price"]["diesel"])
                 cur.execute(sql, value)
@@ -105,7 +103,7 @@ class App():
 
 
 app = App()
-app.initialize()
+#app.initialize()
 app.fetchData()
 app.getYMD()
 app.UpdateInfo()
