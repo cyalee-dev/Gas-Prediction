@@ -22,3 +22,4 @@ class DBCM():
         self.conn.commit()
         self.cur.close()
         self.conn.close()
+        print("Database closed successfully")
