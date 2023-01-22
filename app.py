@@ -109,4 +109,4 @@ if __name__ == "__main__":
     app.getYMD()
     app.UpdateInfo()
     app.UpdateDB()
-    app.removeData()
+    #app.removeData()
