@@ -25,7 +25,7 @@ def checkmsg(message):
          sql = f"SELECT * FROM data WHERE location = '{queryLoc}' ORDER BY timestamp DESC limit 1"
          cur.execute(sql)
          result = cur.fetchone()
-         bot.reply_to(message, f"Predicted date: {result[0]}\n\n\U0001F3D9City: {result[1]} \n\U000026FDRegular: {result[2]}\U000000A2 \n\U000026FDPremium: {result[3]}\U000000A2 \n\U000026FDDiesel: {result[4]}\U000000A2 \n\nLast update: {datetime.fromtimestamp(int(float(result[6])))}")
+         bot.reply_to(message, f"Prediction for: {result[0]}\n\n\U0001F3D9City: {result[1]} \n\U000026FDRegular: {result[2]}\U000000A2 \n\U000026FDPremium: {result[3]}\U000000A2 \n\U000026FDDiesel: {result[4]}\U000000A2 \n\nLast update: {datetime.fromtimestamp(int(float(result[6])))}")
    else:
       bot.reply_to(message, "The city you entered is not currently support by this bot.")
 
